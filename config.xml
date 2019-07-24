@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <widget id="io.cordova.hellocordova" version="0.0.1" android-versionCode="13" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 </widget>
-<preference name="phonegap-version" value="cli-8.1.1" />
+
 <!-- versionCode is optional and Android only -->
 
   <name>Invoice App</name>
