@@ -6,6 +6,6 @@ Ext.define('InvoiceApp.view.Invoices',{
         iconCls:'home',
         title:'Projects',	  
         store: 'InvoiceStore',       
-        itemTpl: '<div>{name}</div>'
+        itemTpl: '<div>{id}:{first}</div>'
         }
 });

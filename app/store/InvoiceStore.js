@@ -1,6 +1,6 @@
 Ext.define('InvoiceApp.store.InvoiceStore',{
 	extend:'Ext.data.Store',
-	config:{	
+	config:{
 		autoLoad:true,	
 		model:'InvoiceApp.model.Invoices'		
 		}
