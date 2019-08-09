@@ -1,1 +1,1 @@
-["function _b35a4f00a50f3a48006005ff0505fc559d6b45f5(){};",0,774,",\r\n        'Invoices",773,1234]
+["function _48e6b435703b2ea1874f073cd59455bbf5cf712c(){};function _b35a4f00a50f3a48006005ff0505fc559d6b45f5(){};",0,744,"  \r\n    views: [\r\n        'Main',\r\n        'Invoices'\r\n    ], \r\n    models:['Invoices'],\r\n    stores:['InvoiceStore'",780,1227]

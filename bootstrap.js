@@ -668,12 +668,17 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.viewport.WindowsPhone": [
     "Ext.viewport.WP"
   ],
+  "InvoiceApp.controller.Main": [],
   "InvoiceApp.form.InvoiceForm": [],
+  "InvoiceApp.form.SupplierVendorForm": [],
   "InvoiceApp.model.Invoices": [],
+  "InvoiceApp.model.SupplierBuyer": [],
   "InvoiceApp.store.InvoiceStore": [],
+  "InvoiceApp.store.SupplierBuyerStore": [],
   "InvoiceApp.view.Invoices": [],
   "InvoiceApp.view.Main": [],
-  "InvoiceApp.view.MainLayout": []
+  "InvoiceApp.view.MainLayout": [],
+  "InvoiceApp.view.SupplierBuyer": []
 });
 
 Ext.ClassManager.addNameAliasMappings({
@@ -1402,11 +1407,17 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.viewport.Ios": [],
   "Ext.viewport.Viewport": [],
   "Ext.viewport.WindowsPhone": [],
+  "InvoiceApp.controller.Main": [],
   "InvoiceApp.form.InvoiceForm": [
     "widget.invoiceform"
   ],
+  "InvoiceApp.form.SupplierVendorForm": [
+    "widget.suppliervendorform"
+  ],
   "InvoiceApp.model.Invoices": [],
+  "InvoiceApp.model.SupplierBuyer": [],
   "InvoiceApp.store.InvoiceStore": [],
+  "InvoiceApp.store.SupplierBuyerStore": [],
   "InvoiceApp.view.Invoices": [
     "widget.invoices"
   ],
@@ -1415,6 +1426,9 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "InvoiceApp.view.MainLayout": [
     "widget.mainlayout"
+  ],
+  "InvoiceApp.view.SupplierBuyer": [
+    "widget.supplier_buyer"
   ]
 });
 

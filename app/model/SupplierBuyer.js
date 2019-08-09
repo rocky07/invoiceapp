@@ -1,12 +1,12 @@
-Ext.define('InvoiceApp.model.Invoices',{
+Ext.define('InvoiceApp.model.SupplierBuyer',{
 	extend:'Ext.data.Model',
 	
 	config: {
         autoLoad:true,    
-        fields: ['id', 'first_name'],
+        fields: ['id', 'phone','city'],
         proxy: {
             type: 'jsonp',
-            url : 'http://sakinastraveldairy.com/invoices',
+            url : 'http://sakinastraveldairy.com/supplierbuyers',
             reader: {
                 type: 'json',
                 rootProperty: 'data'

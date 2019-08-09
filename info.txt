@@ -1,0 +1,54 @@
+DB details
+cycleg25_
+ffdbadmin/jcG241o$
+
+Product
+    
+    Name
+    code
+    Group_id
+    quantity
+    unit
+    unit price
+    cGSR
+    sgst
+    igst
+    cess
+
+Group
+    code
+    Group Name
+    
+invoice_products
+    invoice_id
+    product_id
+    product
+
+invoices
+    Supplier_id
+    buyer_id
+    invoice_products_id
+    bank_accouont_holder_name
+    bank_acc_no
+    branch_ifsc
+    branch_name
+    bank_accouont_holder_name
+    
+Supplier_buyer
+    Supplier_id
+    supplier_name
+    Plan
+    email
+    phone 
+    address
+    city
+    state
+    pin
+    is_supplier
+
+Plan
+
+* create new invoice
+* edit invoices
+* sync and save invoice
+* download and email invoices

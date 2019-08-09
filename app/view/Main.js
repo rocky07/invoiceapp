@@ -9,8 +9,9 @@ Ext.define('InvoiceApp.view.Main', {
         tabBarPosition: 'bottom',
         items: [
             {                
-               // title: 'All Projects',
-               // iconCls: 'action',
+                 xtype:'supplier_buyer'
+            },
+            {                
                 xtype:'invoices'
             },
             {

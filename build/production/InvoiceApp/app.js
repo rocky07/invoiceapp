@@ -2073,6 +2073,9 @@ try {
 } catch (e) {
 }
 var Ext = Ext || {};
+if (!Ext.Picker) {
+  Ext.Picker = {};
+}
 if (!Ext.app) {
   Ext.app = {};
 }
@@ -2160,6 +2163,9 @@ if (!Ext.lib) {
 if (!Ext.mixin) {
   Ext.mixin = {};
 }
+if (!Ext.picker) {
+  Ext.picker = {};
+}
 if (!Ext.proxy) {
   Ext.proxy = {};
 }
@@ -2188,6 +2194,15 @@ if (!Ext.viewport) {
   Ext.viewport = {};
 }
 var InvoiceApp = InvoiceApp || {};
+if (!InvoiceApp.form) {
+  InvoiceApp.form = {};
+}
+if (!InvoiceApp.model) {
+  InvoiceApp.model = {};
+}
+if (!InvoiceApp.store) {
+  InvoiceApp.store = {};
+}
 if (!InvoiceApp.view) {
   InvoiceApp.view = {};
 }
@@ -15524,101 +15539,6 @@ Ext.cmd.derive('Ext.data.Connection', Ext.Base, {statics:{requestId:0}, config:{
   return {request:request, requestId:request.id, status:request.aborted ? -1 : 0, statusText:request.aborted ? 'transaction aborted' : 'communication failure', aborted:request.aborted, timedout:request.timedout};
 }}, 1, 0, 0, 0, 0, [['observable', Ext.mixin.Observable]], [Ext.data, 'Connection'], 0);
 Ext.cmd.derive('Ext.Ajax', Ext.data.Connection, {singleton:true, autoAbort:false}, 0, 0, 0, 0, 0, 0, [Ext, 'Ajax'], 0);
-Ext.cmd.derive('Ext.Media', Ext.Component, {config:{url:'', enableControls:Ext.os.is.Android ? false : true, autoResume:false, autoPause:true, preload:true, loop:false, media:null, volume:1, muted:false}, constructor:function() {
-  this.mediaEvents = {};
-  Ext.Component.prototype.constructor.apply(this, arguments);
-}, initialize:function() {
-  var me = this;
-  Ext.Component.prototype.initialize.call(this);
-  me.on({scope:me, activate:me.onActivate, deactivate:me.onDeactivate});
-  me.addMediaListener({canplay:'onCanPlay', play:'onPlay', pause:'onPause', ended:'onEnd', volumechange:'onVolumeChange', timeupdate:'onTimeUpdate'});
-}, addMediaListener:function(event, fn) {
-  var me = this, dom = me.media.dom, bind = Ext.Function.bind;
-  Ext.Object.each(event, function(e, fn) {
-    fn = bind(me[fn], me);
-    me.mediaEvents[e] = fn;
-    dom.addEventListener(e, fn);
-  });
-}, onPlay:function() {
-  this.fireEvent('play', this);
-}, onCanPlay:function() {
-  this.fireEvent('canplay', this);
-}, onPause:function() {
-  this.fireEvent('pause', this, this.getCurrentTime());
-}, onEnd:function() {
-  this.fireEvent('ended', this, this.getCurrentTime());
-}, onVolumeChange:function() {
-  this.fireEvent('volumechange', this, this.media.dom.volume);
-}, onTimeUpdate:function() {
-  this.fireEvent('timeupdate', this, this.getCurrentTime());
-}, isPlaying:function() {
-  return !Boolean(this.media.dom.paused);
-}, onActivate:function() {
-  var me = this;
-  if (me.getAutoResume() && !me.isPlaying()) {
-    me.play();
-  }
-}, onDeactivate:function() {
-  var me = this;
-  if (me.getAutoPause() && me.isPlaying()) {
-    me.pause();
-  }
-}, updateUrl:function(newUrl) {
-  var dom = this.media.dom;
-  dom.src = newUrl;
-  if ('load' in dom) {
-    dom.load();
-  }
-  if (this.isPlaying()) {
-    this.play();
-  }
-}, updateEnableControls:function(enableControls) {
-  this.media.dom.controls = enableControls ? 'controls' : false;
-}, updateLoop:function(loop) {
-  this.media.dom.loop = loop ? 'loop' : false;
-}, play:function() {
-  var dom = this.media.dom;
-  if ('play' in dom) {
-    dom.play();
-    setTimeout(function() {
-      dom.play();
-    }, 10);
-  }
-}, pause:function() {
-  var dom = this.media.dom;
-  if ('pause' in dom) {
-    dom.pause();
-  }
-}, toggle:function() {
-  if (this.isPlaying()) {
-    this.pause();
-  } else {
-    this.play();
-  }
-}, stop:function() {
-  var me = this;
-  me.setCurrentTime(0);
-  me.fireEvent('stop', me);
-  me.pause();
-}, updateVolume:function(volume) {
-  this.media.dom.volume = volume;
-}, updateMuted:function(muted) {
-  this.fireEvent('mutedchange', this, muted);
-  this.media.dom.muted = muted;
-}, getCurrentTime:function() {
-  return this.media.dom.currentTime;
-}, setCurrentTime:function(time) {
-  this.media.dom.currentTime = time;
-  return time;
-}, getDuration:function() {
-  return this.media.dom.duration;
-}, destroy:function() {
-  var me = this, dom = me.media.dom, mediaEvents = me.mediaEvents;
-  Ext.Object.each(mediaEvents, function(event, fn) {
-    dom.removeEventListener(event, fn);
-  });
-  Ext.Component.prototype.destroy.call(this);
-}}, 1, ['media'], ['component', 'media'], {'component':true, 'media':true}, ['widget.media'], 0, [Ext, 'Media'], 0);
 Ext.cmd.derive('Ext.ComponentQuery', Ext.Base, {singleton:true}, 0, 0, 0, 0, 0, 0, [Ext, 'ComponentQuery'], function() {
   var cq = this, filterFnPattern = ['var r \x3d [],', 'i \x3d 0,', 'it \x3d items,', 'l \x3d it.length,', 'c;', 'for (; i \x3c l; i++) {', 'c \x3d it[i];', 'if (c.{0}) {', 'r.push(c);', '}', '}', 'return r;'].join(''), filterItems = function(items, operation) {
     return operation.method.apply(this, [items].concat(operation.args));
@@ -16744,64 +16664,6 @@ Ext.cmd.derive('Ext.TitleBar', Ext.Container, {isToolbar:true, config:{baseCls:'
     this.refreshTitlePosition();
   }
 }}, 0, ['titlebar'], ['component', 'container', 'titlebar'], {'component':true, 'container':true, 'titlebar':true}, ['widget.titlebar'], 0, [Ext, 'TitleBar'], 0);
-Ext.cmd.derive('Ext.Video', Ext.Media, {config:{posterUrl:null, baseCls:'x-video', controls:true}, template:[{reference:'ghost', classList:['x-video-ghost']}, {tag:'video', reference:'media', classList:['x-media']}], initialize:function() {
-  var me = this;
-  Ext.Media.prototype.initialize.call(this);
-  me.media.hide();
-  me.onBefore({erased:'onErased', scope:me});
-  me.ghost.on({tap:'onGhostTap', scope:me});
-  me.media.on({pause:'onPause', scope:me});
-  if (Ext.os.is.Android4 || Ext.os.is.iPad) {
-    this.isInlineVideo = true;
-  }
-}, applyUrl:function(url) {
-  return [].concat(url);
-}, updateUrl:function(newUrl) {
-  var me = this, media = me.media, newLn = newUrl.length, existingSources = media.query('source'), oldLn = existingSources.length, i;
-  for (i = 0; i < oldLn; i++) {
-    Ext.fly(existingSources[i]).destroy();
-  }
-  for (i = 0; i < newLn; i++) {
-    media.appendChild(Ext.Element.create({tag:'source', src:newUrl[i]}));
-  }
-  if (me.isPlaying()) {
-    me.play();
-  }
-}, updateControls:function(value) {
-  this.media.set({controls:value ? true : undefined});
-}, onErased:function() {
-  this.pause();
-  this.media.setTop(-2000);
-  this.ghost.show();
-}, onGhostTap:function() {
-  var me = this, media = this.media, ghost = this.ghost;
-  media.show();
-  if (Ext.browser.is.AndroidStock2) {
-    setTimeout(function() {
-      me.play();
-      setTimeout(function() {
-        media.hide();
-      }, 10);
-    }, 10);
-  } else {
-    ghost.hide();
-    me.play();
-  }
-}, onPause:function() {
-  Ext.Media.prototype.onPause.apply(this, arguments);
-  if (!this.isInlineVideo) {
-    this.media.setTop(-2000);
-    this.ghost.show();
-  }
-}, onPlay:function() {
-  Ext.Media.prototype.onPlay.apply(this, arguments);
-  this.media.setTop(0);
-}, updatePosterUrl:function(newUrl) {
-  var ghost = this.ghost;
-  if (ghost) {
-    ghost.setStyle('background-image', 'url(' + newUrl + ')');
-  }
-}}, 0, ['video'], ['component', 'media', 'video'], {'component':true, 'media':true, 'video':true}, ['widget.video'], 0, [Ext, 'Video'], 0);
 Ext.cmd.derive('Ext.app.Action', Ext.Base, {config:{scope:null, application:null, controller:null, action:null, args:[], url:undefined, data:{}, title:null, beforeFilters:[], currentFilterIndex:-1}, constructor:function(config) {
   this.initConfig(config);
   this.getUrl();
@@ -21038,6 +20900,75 @@ Ext.define('Ext.direct.Manager', {singleton:true, mixins:{observable:Ext.mixin.O
   }
   return fn || null;
 }});
+Ext.cmd.derive('Ext.data.JsonP', Ext.Base, {alternateClassName:'Ext.util.JSONP', singleton:true, requestCount:0, requests:{}, timeout:30000, disableCaching:true, disableCachingParam:'_dc', callbackKey:'callback', request:function(options) {
+  options = Ext.apply({}, options);
+  var me = this, disableCaching = Ext.isDefined(options.disableCaching) ? options.disableCaching : me.disableCaching, cacheParam = options.disableCachingParam || me.disableCachingParam, id = ++me.requestCount, callbackName = options.callbackName || 'callback' + id, callbackKey = options.callbackKey || me.callbackKey, timeout = Ext.isDefined(options.timeout) ? options.timeout : me.timeout, params = Ext.apply({}, options.params), url = options.url, name = Ext.isSandboxed ? Ext.getUniqueGlobalNamespace() : 
+  'Ext', request, script;
+  params[callbackKey] = name + '.data.JsonP.' + callbackName;
+  if (disableCaching) {
+    params[cacheParam] = (new Date).getTime();
+  }
+  script = me.createScript(url, params, options);
+  me.requests[id] = request = {url:url, params:params, script:script, id:id, scope:options.scope, success:options.success, failure:options.failure, callback:options.callback, callbackKey:callbackKey, callbackName:callbackName};
+  if (timeout > 0) {
+    request.timeout = setTimeout(Ext.bind(me.handleTimeout, me, [request]), timeout);
+  }
+  me.setupErrorHandling(request);
+  me[callbackName] = Ext.bind(me.handleResponse, me, [request], true);
+  me.loadScript(request);
+  return request;
+}, abort:function(request) {
+  var requests = this.requests, key;
+  if (request) {
+    if (!request.id) {
+      request = requests[request];
+    }
+    this.handleAbort(request);
+  } else {
+    for (key in requests) {
+      if (requests.hasOwnProperty(key)) {
+        this.abort(requests[key]);
+      }
+    }
+  }
+}, setupErrorHandling:function(request) {
+  request.script.onerror = Ext.bind(this.handleError, this, [request]);
+}, handleAbort:function(request) {
+  request.errorType = 'abort';
+  this.handleResponse(null, request);
+}, handleError:function(request) {
+  request.errorType = 'error';
+  this.handleResponse(null, request);
+}, cleanupErrorHandling:function(request) {
+  request.script.onerror = null;
+}, handleTimeout:function(request) {
+  request.errorType = 'timeout';
+  this.handleResponse(null, request);
+}, handleResponse:function(result, request) {
+  var success = true;
+  if (request.timeout) {
+    clearTimeout(request.timeout);
+  }
+  delete this[request.callbackName];
+  delete this.requests[request.id];
+  this.cleanupErrorHandling(request);
+  Ext.fly(request.script).destroy();
+  if (request.errorType) {
+    success = false;
+    Ext.callback(request.failure, request.scope, [request.errorType, request]);
+  } else {
+    Ext.callback(request.success, request.scope, [result, request]);
+  }
+  Ext.callback(request.callback, request.scope, [success, result, request.errorType, request]);
+}, createScript:function(url, params, options) {
+  var script = document.createElement('script');
+  script.setAttribute('src', Ext.urlAppend(url, Ext.Object.toQueryString(params)));
+  script.setAttribute('async', true);
+  script.setAttribute('type', 'text/javascript');
+  return script;
+}, loadScript:function(request) {
+  Ext.getHead().appendChild(request.script);
+}}, 0, 0, 0, 0, 0, 0, [Ext.data, 'JsonP', Ext.util, 'JSONP'], 0);
 Ext.cmd.derive('Ext.data.Validations', Ext.Base, {alternateClassName:'Ext.data.validations', singleton:true, config:{presenceMessage:'must be present', lengthMessage:'is the wrong length', formatMessage:'is the wrong format', inclusionMessage:'is not included in the list of acceptable values', exclusionMessage:'is not an acceptable value', emailMessage:'is not a valid email address'}, constructor:function(config) {
   this.initConfig(config);
 }, getMessage:function(type) {
@@ -21073,6 +21004,50 @@ Ext.cmd.derive('Ext.data.Validations', Ext.Base, {alternateClassName:'Ext.data.v
 }, exclusion:function(config, value) {
   return config.list && Ext.Array.indexOf(config.list, value) == -1;
 }}, 1, 0, 0, 0, 0, 0, [Ext.data, 'Validations', Ext.data, 'validations'], 0);
+Ext.cmd.derive('Ext.data.proxy.JsonP', Ext.data.proxy.Server, {alternateClassName:'Ext.data.ScriptTagProxy', config:{defaultWriterType:'base', callbackKey:'callback', recordParam:'records', autoAppendParams:true}, doRequest:function(operation, callback, scope) {
+  var me = this, request = me.buildRequest(operation), params = request.getParams();
+  request.setConfig({callbackKey:me.getCallbackKey(), timeout:me.getTimeout(), scope:me, callback:me.createRequestCallback(request, operation, callback, scope)});
+  if (me.getAutoAppendParams()) {
+    request.setParams({});
+  }
+  request.setJsonP(Ext.data.JsonP.request(request.getCurrentConfig()));
+  request.setParams(params);
+  operation.setStarted();
+  me.lastRequest = request;
+  return request;
+}, createRequestCallback:function(request, operation, callback, scope) {
+  var me = this;
+  return function(success, response, errorType) {
+    delete me.lastRequest;
+    me.processResponse(success, operation, request, response, callback, scope);
+  };
+}, setException:function(operation, response) {
+  operation.setException(operation.getRequest().getJsonP().errorType);
+}, buildUrl:function(request) {
+  var me = this, url = Ext.data.proxy.Server.prototype.buildUrl.apply(this, arguments), params = Ext.apply({}, request.getParams()), filters = params.filters, filter, i, value;
+  delete params.filters;
+  if (me.getAutoAppendParams()) {
+    url = Ext.urlAppend(url, Ext.Object.toQueryString(params));
+  }
+  if (filters && filters.length) {
+    for (i = 0; i < filters.length; i++) {
+      filter = filters[i];
+      value = filter.getValue();
+      if (value) {
+        url = Ext.urlAppend(url, filter.getProperty() + '\x3d' + value);
+      }
+    }
+  }
+  return url;
+}, destroy:function() {
+  this.abort();
+  Ext.data.proxy.Server.prototype.destroy.apply(this, arguments);
+}, abort:function() {
+  var lastRequest = this.lastRequest;
+  if (lastRequest) {
+    Ext.data.JsonP.abort(lastRequest.getJsonP());
+  }
+}}, 0, 0, 0, 0, ['proxy.jsonp', 'proxy.scripttag'], 0, [Ext.data.proxy, 'JsonP', Ext.data, 'ScriptTagProxy'], 0);
 Ext.cmd.derive('Ext.data.reader.Array', Ext.data.reader.Json, {alternateClassName:'Ext.data.ArrayReader', config:{totalProperty:undefined, successProperty:undefined}, createFieldAccessExpression:function(field, fieldVarName, dataName) {
   var me = this, mapping = field.getMapping(), index = mapping == null ? me.getModel().getFields().indexOf(field) : mapping, result;
   if (typeof index === 'function') {
@@ -24696,62 +24671,782 @@ Ext.cmd.derive('Ext.field.Checkbox', Ext.field.Field, {alternateClassName:'Ext.f
   this.setChecked(this.originalState);
   return this;
 }}, 0, ['checkboxfield'], ['component', 'field', 'checkboxfield'], {'component':true, 'field':true, 'checkboxfield':true}, ['widget.checkboxfield'], 0, [Ext.field, 'Checkbox', Ext.form, 'Checkbox'], 0);
-Ext.cmd.derive('Ext.field.Email', Ext.field.Text, {alternateClassName:'Ext.form.Email', config:{component:{type:'email'}, autoCapitalize:false}}, 0, ['emailfield'], ['component', 'field', 'textfield', 'emailfield'], {'component':true, 'field':true, 'textfield':true, 'emailfield':true}, ['widget.emailfield'], 0, [Ext.field, 'Email', Ext.form, 'Email'], 0);
-Ext.cmd.derive('Ext.form.FieldSet', Ext.Container, {config:{baseCls:'x-form-fieldset', title:null, instructions:null}, applyTitle:function(title) {
-  if (typeof title == 'string') {
-    title = {title:title};
+Ext.define('Ext.picker.Slot', {extend:Ext.dataview.DataView, xtype:'pickerslot', alternateClassName:'Ext.Picker.Slot', isSlot:true, config:{title:null, showTitle:true, cls:'x-picker-slot', name:null, value:null, flex:1, align:'left', displayField:'text', valueField:'value', itemTpl:null, scrollable:{direction:'vertical', indicators:false, momentumEasing:{minVelocity:2}, slotSnapEasing:{duration:100}}, verticallyCenterItems:true}, platformConfig:[{theme:['Windows'], title:'choose an item'}], constructor:function() {
+  this.selectedIndex = 0;
+  Ext.dataview.DataView.prototype.constructor.apply(this, arguments);
+}, applyTitle:function(title) {
+  if (title) {
+    title = Ext.create('Ext.Component', {cls:'x-picker-slot-title', docked:'top', html:title});
   }
-  Ext.applyIf(title, {docked:'top', baseCls:this.getBaseCls() + '-title'});
-  return Ext.factory(title, Ext.Title, this._title);
+  return title;
 }, updateTitle:function(newTitle, oldTitle) {
   if (newTitle) {
     this.add(newTitle);
+    this.setupBar();
   }
   if (oldTitle) {
     this.remove(oldTitle);
   }
-}, getTitle:function() {
-  var title = this._title;
-  if (title && title instanceof Ext.Title) {
-    return title.getTitle();
+}, updateShowTitle:function(showTitle) {
+  var title = this.getTitle(), mode = showTitle ? 'show' : 'hide';
+  if (title) {
+    title.on(mode, this.setupBar, this, {single:true, delay:50});
+    title[showTitle ? 'show' : 'hide']();
   }
-  return title;
-}, applyInstructions:function(instructions) {
-  if (typeof instructions == 'string') {
-    instructions = {title:instructions};
+}, updateDisplayField:function(newDisplayField) {
+  if (!this.config.itemTpl) {
+    this.setItemTpl('\x3cdiv class\x3d"x-picker-item {cls} \x3ctpl if\x3d"extra"\x3ex-picker-invalid\x3c/tpl\x3e"\x3e{' + newDisplayField + '}\x3c/div\x3e');
   }
-  Ext.applyIf(instructions, {docked:'bottom', baseCls:this.getBaseCls() + '-instructions'});
-  return Ext.factory(instructions, Ext.Title, this._instructions);
-}, updateInstructions:function(newInstructions, oldInstructions) {
-  if (newInstructions) {
-    this.add(newInstructions);
+}, updateAlign:function(newAlign, oldAlign) {
+  var element = this.element;
+  element.addCls('x-picker-' + newAlign);
+  element.removeCls('x-picker-' + oldAlign);
+}, applyData:function(data) {
+  var parsedData = [], ln = data && data.length, i, item, obj;
+  if (data && Ext.isArray(data) && ln) {
+    for (i = 0; i < ln; i++) {
+      item = data[i];
+      obj = {};
+      if (Ext.isArray(item)) {
+        obj[this.valueField] = item[0];
+        obj[this.displayField] = item[1];
+      } else {
+        if (Ext.isString(item)) {
+          obj[this.valueField] = item;
+          obj[this.displayField] = item;
+        } else {
+          if (Ext.isObject(item)) {
+            obj = item;
+          }
+        }
+      }
+      parsedData.push(obj);
+    }
   }
-  if (oldInstructions) {
-    this.remove(oldInstructions);
+  return data;
+}, initialize:function() {
+  Ext.dataview.DataView.prototype.initialize.call(this);
+  var scroller = this.getScrollable().getScroller();
+  this.on({scope:this, painted:'onPainted', itemtap:'doItemTap'});
+  this.element.on({scope:this, touchstart:'onTouchStart', touchend:'onTouchEnd'});
+  scroller.on({scope:this, scrollend:'onScrollEnd'});
+}, onPainted:function() {
+  this.setupBar();
+}, getPicker:function() {
+  if (!this.picker) {
+    this.picker = this.getParent();
   }
-}, getInstructions:function() {
-  var instructions = this._instructions;
-  if (instructions && instructions instanceof Ext.Title) {
-    return instructions.getTitle();
+  return this.picker;
+}, setupBar:function() {
+  if (!this.rendered) {
+    return;
   }
-  return instructions;
-}, doSetDisabled:function(newDisabled) {
-  this.getFieldsAsArray().forEach(function(field) {
-    field.setDisabled(newDisabled);
-  });
+  var element = this.element, innerElement = this.innerElement, picker = this.getPicker(), bar = picker.bar, value = this.getValue(), showTitle = this.getShowTitle(), title = this.getTitle(), scrollable = this.getScrollable(), scroller = scrollable.getScroller(), titleHeight = 0, barHeight, padding;
+  barHeight = bar.dom.getBoundingClientRect().height;
+  if (showTitle && title) {
+    titleHeight = title.element.getHeight();
+  }
+  padding = Math.ceil((element.getHeight() - titleHeight - barHeight) / 2);
+  if (this.getVerticallyCenterItems()) {
+    innerElement.setStyle({padding:padding + 'px 0 ' + padding + 'px'});
+  }
+  scroller.refresh();
+  scroller.setSlotSnapSize(barHeight);
+  this.setValue(value);
+}, doItemTap:function(list, index, item, e) {
+  var me = this;
+  me.selectedIndex = index;
+  me.selectedNode = item;
+  me.scrollToItem(item, true);
+}, scrollToItem:function(item, animated) {
+  var y = item.getY(), parentEl = item.parent(), parentY = parentEl.getY(), scrollView = this.getScrollable(), scroller = scrollView.getScroller(), difference;
+  difference = y - parentY;
+  scroller.scrollTo(0, difference, animated);
+}, onTouchStart:function() {
+  this.element.addCls('x-scrolling');
+}, onTouchEnd:function() {
+  this.element.removeCls('x-scrolling');
+}, onScrollEnd:function(scroller, x, y) {
+  var me = this, index = Math.round(y / me.picker.bar.dom.getBoundingClientRect().height), viewItems = me.getViewItems(), item = viewItems[index];
+  if (item) {
+    me.selectedIndex = index;
+    me.selectedNode = item;
+    me.fireEvent('slotpick', me, me.getValue(), me.selectedNode);
+  }
+}, getValue:function(useDom) {
+  var store = this.getStore(), record, value;
+  if (!store) {
+    return;
+  }
+  if (!this.rendered || !useDom) {
+    return this._value;
+  }
+  if (this._value === false) {
+    return null;
+  }
+  record = store.getAt(this.selectedIndex);
+  value = record ? record.get(this.getValueField()) : null;
+  return value;
+}, setValue:function(value) {
+  return this.doSetValue(value);
+}, setValueAnimated:function(value) {
+  return this.doSetValue(value, true);
+}, doSetValue:function(value, animated) {
+  if (!this.rendered) {
+    this._value = value;
+    return;
+  }
+  var store = this.getStore(), viewItems = this.getViewItems(), valueField = this.getValueField(), index, item;
+  index = store.findExact(valueField, value);
+  if (index == -1) {
+    index = 0;
+  }
+  item = Ext.get(viewItems[index]);
+  this.selectedIndex = index;
+  if (item) {
+    this.scrollToItem(item, animated ? {duration:100} : false);
+    this.select(this.selectedIndex);
+  }
+  this._value = value;
+}});
+Ext.define('Ext.picker.Picker', {extend:Ext.Sheet, alias:'widget.picker', alternateClassName:'Ext.Picker', isPicker:true, config:{baseCls:'x-picker', doneButton:true, cancelButton:true, useTitles:false, slots:null, value:null, height:220, layout:{type:'hbox', align:'stretch'}, centered:false, left:0, right:0, bottom:0, defaultType:'pickerslot', toolbarPosition:'top', toolbar:{xtype:'titlebar'}}, platformConfig:[{theme:['Windows'], height:'100%', toolbarPosition:'bottom', toolbar:{xtype:'toolbar', 
+layout:{type:'hbox', pack:'center'}}, doneButton:{iconCls:'check2', ui:'round', text:''}, cancelButton:{iconCls:'delete', ui:'round', text:''}}, {theme:['CupertinoClassic'], toolbar:{ui:'black'}}, {theme:['MountainView'], toolbarPosition:'bottom', toolbar:{defaults:{flex:1}}}], initialize:function() {
+  var me = this, clsPrefix = 'x-', innerElement = this.innerElement;
+  this.mask = innerElement.createChild({cls:clsPrefix + 'picker-mask'});
+  this.bar = this.mask.createChild({cls:clsPrefix + 'picker-bar'});
+  me.on({scope:this, delegate:'pickerslot', slotpick:'onSlotPick'});
+}, applyToolbar:function(config) {
+  if (config === true) {
+    config = {};
+  }
+  Ext.applyIf(config, {docked:this.getToolbarPosition()});
+  return Ext.factory(config, 'Ext.TitleBar', this.getToolbar());
+}, updateToolbar:function(newToolbar, oldToolbar) {
+  if (newToolbar) {
+    this.add(newToolbar);
+  }
+  if (oldToolbar) {
+    this.remove(oldToolbar);
+  }
+}, applyDoneButton:function(config) {
+  if (config) {
+    if (Ext.isBoolean(config)) {
+      config = {};
+    }
+    if (typeof config == 'string') {
+      config = {text:config};
+    }
+    Ext.applyIf(config, {ui:'action', align:'right', text:'Done'});
+  }
+  return Ext.factory(config, 'Ext.Button', this.getDoneButton());
+}, updateDoneButton:function(newDoneButton, oldDoneButton) {
+  var toolbar = this.getToolbar();
+  if (newDoneButton) {
+    toolbar.add(newDoneButton);
+    newDoneButton.on('tap', this.onDoneButtonTap, this);
+  } else {
+    if (oldDoneButton) {
+      toolbar.remove(oldDoneButton);
+    }
+  }
+}, applyCancelButton:function(config) {
+  if (config) {
+    if (Ext.isBoolean(config)) {
+      config = {};
+    }
+    if (typeof config == 'string') {
+      config = {text:config};
+    }
+    Ext.applyIf(config, {align:'left', text:'Cancel'});
+  }
+  return Ext.factory(config, 'Ext.Button', this.getCancelButton());
+}, updateCancelButton:function(newCancelButton, oldCancelButton) {
+  var toolbar = this.getToolbar();
+  if (newCancelButton) {
+    toolbar.add(newCancelButton);
+    newCancelButton.on('tap', this.onCancelButtonTap, this);
+  } else {
+    if (oldCancelButton) {
+      toolbar.remove(oldCancelButton);
+    }
+  }
+}, updateUseTitles:function(useTitles) {
+  var innerItems = this.getInnerItems(), ln = innerItems.length, cls = 'x-use-titles', i, innerItem;
+  if (useTitles) {
+    this.addCls(cls);
+  } else {
+    this.removeCls(cls);
+  }
+  for (i = 0; i < ln; i++) {
+    innerItem = innerItems[i];
+    if (innerItem.isSlot) {
+      innerItem.setShowTitle(useTitles);
+    }
+  }
+}, applySlots:function(slots) {
+  if (slots) {
+    var ln = slots.length, i;
+    for (i = 0; i < ln; i++) {
+      slots[i].picker = this;
+    }
+  }
+  return slots;
+}, updateSlots:function(newSlots) {
+  var bcss = 'x-', innerItems;
+  this.removeAll();
+  if (newSlots) {
+    this.add(newSlots);
+  }
+  innerItems = this.getInnerItems();
+  if (innerItems.length > 0) {
+    innerItems[0].addCls(bcss + 'first');
+    innerItems[innerItems.length - 1].addCls(bcss + 'last');
+  }
+  this.updateUseTitles(this.getUseTitles());
+}, onDoneButtonTap:function() {
+  var oldValue = this._value, newValue = this.getValue(true);
+  if (newValue != oldValue) {
+    this.fireEvent('change', this, newValue);
+  }
+  this.hide();
+  Ext.util.InputBlocker.unblockInputs();
+}, onCancelButtonTap:function() {
+  this.fireEvent('cancel', this);
+  this.hide();
+  Ext.util.InputBlocker.unblockInputs();
+}, onSlotPick:function(slot) {
+  this.fireEvent('pick', this, this.getValue(true), slot);
+}, show:function() {
+  if (this.getParent() === undefined) {
+    Ext.Viewport.add(this);
+  }
+  Ext.Sheet.prototype.show.apply(this, arguments);
+  if (!this.isHidden()) {
+    this.setValue(this._value);
+  }
+  Ext.util.InputBlocker.blockInputs();
+}, setValue:function(values, animated) {
+  var me = this, slots = me.getInnerItems(), ln = slots.length, key, slot, loopSlot, i, value;
+  if (!values) {
+    values = {};
+    for (i = 0; i < ln; i++) {
+      values[slots[i].config.name] = null;
+    }
+  }
+  for (key in values) {
+    slot = null;
+    value = values[key];
+    for (i = 0; i < slots.length; i++) {
+      loopSlot = slots[i];
+      if (loopSlot.config.name == key) {
+        slot = loopSlot;
+        break;
+      }
+    }
+    if (slot) {
+      if (animated) {
+        slot.setValueAnimated(value);
+      } else {
+        slot.setValue(value);
+      }
+    }
+  }
+  me._values = me._value = values;
+  return me;
+}, setValueAnimated:function(values) {
+  this.setValue(values, true);
+}, getValue:function(useDom) {
+  var values = {}, items = this.getItems().items, ln = items.length, item, i;
+  if (useDom) {
+    for (i = 0; i < ln; i++) {
+      item = items[i];
+      if (item && item.isSlot) {
+        values[item.getName()] = item.getValue(useDom);
+      }
+    }
+    this._values = values;
+  }
+  return this._values;
+}, getValues:function() {
+  return this.getValue();
+}, destroy:function() {
+  Ext.Sheet.prototype.destroy.call(this);
+  Ext.destroy(this.mask, this.bar);
+}}, function() {
+});
+Ext.cmd.derive('Ext.field.Select', Ext.field.Text, {alternateClassName:'Ext.form.Select', config:{ui:'select', valueField:'value', displayField:'text', store:null, options:null, hiddenName:null, component:{useMask:true}, clearIcon:false, usePicker:'auto', autoSelect:true, defaultPhonePickerConfig:null, defaultTabletPickerConfig:null, name:'picker', pickerSlotAlign:'center'}, platformConfig:[{theme:['Windows'], pickerSlotAlign:'left'}, {theme:['Tizen'], usePicker:false}], initialize:function() {
+  var me = this, component = me.getComponent();
+  Ext.field.Text.prototype.initialize.call(this);
+  component.on({scope:me, masktap:'onMaskTap'});
+  component.doMaskTap = Ext.emptyFn;
+  if (Ext.browser.is.AndroidStock2) {
+    component.input.dom.disabled = true;
+  }
+  if (Ext.theme.is.Blackberry || Ext.theme.is.Blackberry103) {
+    this.label.on({scope:me, tap:'onFocus'});
+  }
+}, getElementConfig:function() {
+  if (Ext.theme.is.Blackberry || Ext.theme.is.Blackberry103) {
+    var prefix = 'x-';
+    return {reference:'element', className:'x-container', children:[{reference:'innerElement', cls:prefix + 'component-outer', children:[{reference:'label', cls:prefix + 'form-label', children:[{reference:'labelspan', tag:'span'}]}]}]};
+  } else {
+    return Ext.field.Text.prototype.getElementConfig.apply(this, arguments);
+  }
+}, updateDefaultPhonePickerConfig:function(newConfig) {
+  var picker = this.picker;
+  if (picker) {
+    picker.setConfig(newConfig);
+  }
+}, updateDefaultTabletPickerConfig:function(newConfig) {
+  var listPanel = this.listPanel;
+  if (listPanel) {
+    listPanel.setConfig(newConfig);
+  }
+}, applyUsePicker:function(usePicker) {
+  if (usePicker == 'auto') {
+    usePicker = Ext.os.deviceType == 'Phone';
+  }
+  return Boolean(usePicker);
+}, syncEmptyCls:Ext.emptyFn, applyValue:function(value) {
+  var record = value, index, store;
+  this.getOptions();
+  store = this.getStore();
+  if (value != undefined && !value.isModel && store) {
+    index = store.find(this.getValueField(), value, null, null, null, true);
+    if (index == -1) {
+      index = store.find(this.getDisplayField(), value, null, null, null, true);
+    }
+    record = store.getAt(index);
+  }
+  return record;
+}, updateValue:function(newValue, oldValue) {
+  this.record = newValue;
+  Ext.field.Text.prototype.updateValue.call(this, newValue && newValue.isModel ? newValue.get(this.getDisplayField()) : '');
+}, getValue:function() {
+  var record = this.record;
+  return record && record.isModel ? record.get(this.getValueField()) : null;
+}, getRecord:function() {
+  return this.record;
+}, getPhonePicker:function() {
+  var config = this.getDefaultPhonePickerConfig();
+  if (!this.picker) {
+    this.picker = Ext.create('Ext.picker.Picker', Ext.apply({slots:[{align:this.getPickerSlotAlign(), name:this.getName(), valueField:this.getValueField(), displayField:this.getDisplayField(), value:this.getValue(), store:this.getStore()}], listeners:{change:this.onPickerChange, scope:this}}, config));
+  }
+  return this.picker;
+}, getTabletPicker:function() {
+  var config = this.getDefaultTabletPickerConfig();
+  if (!this.listPanel) {
+    this.listPanel = Ext.create('Ext.Panel', Ext.apply({left:0, top:0, modal:true, cls:'x-select-overlay', layout:'fit', hideOnMaskTap:true, width:Ext.os.is.Phone ? '14em' : '18em', height:Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10 ? '12em' : Ext.os.is.Phone ? '12.5em' : '22em', items:{xtype:'list', store:this.getStore(), itemTpl:'\x3cspan class\x3d"x-list-label"\x3e{' + this.getDisplayField() + ':htmlEncode}\x3c/span\x3e', listeners:{select:this.onListSelect, itemtap:this.onListTap, 
+    scope:this}}}, config));
+  }
+  return this.listPanel;
+}, onMaskTap:function() {
+  this.onFocus();
+  return false;
+}, showPicker:function() {
+  var me = this, store = me.getStore(), value = me.getValue();
+  if (!store || store.getCount() === 0) {
+    return;
+  }
+  if (me.getReadOnly()) {
+    return;
+  }
+  me.isFocused = true;
+  if (me.getUsePicker()) {
+    var picker = me.getPhonePicker(), name = me.getName(), pickerValue = {};
+    pickerValue[name] = value;
+    picker.setValue(pickerValue);
+    if (!picker.getParent()) {
+      Ext.Viewport.add(picker);
+    }
+    picker.show();
+  } else {
+    var listPanel = me.getTabletPicker(), list = listPanel.down('list'), index, record;
+    if (!listPanel.getParent()) {
+      Ext.Viewport.add(listPanel);
+    }
+    listPanel.showBy(me.getComponent(), null);
+    if (value || me.getAutoSelect()) {
+      store = list.getStore();
+      index = store.find(me.getValueField(), value, null, null, null, true);
+      record = store.getAt(index);
+      if (record) {
+        list.select(record, null, true);
+      }
+    }
+  }
+}, onListSelect:function(item, record) {
+  var me = this;
+  if (record) {
+    me.setValue(record);
+  }
+}, onListTap:function() {
+  this.listPanel.hide({type:'fade', out:true, scope:this});
+}, onPickerChange:function(picker, value) {
+  var me = this, newValue = value[me.getName()], store = me.getStore(), index = store.find(me.getValueField(), newValue, null, null, null, true), record = store.getAt(index);
+  me.setValue(record);
+}, onChange:function(component, newValue, oldValue) {
+  var me = this, store = me.getStore(), index = store ? store.find(me.getDisplayField(), oldValue, null, null, null, true) : -1, valueField = me.getValueField(), record = store ? store.getAt(index) : null;
+  oldValue = record ? record.get(valueField) : null;
+  me.fireEvent('change', me, me.getValue(), oldValue);
+}, updateOptions:function(newOptions) {
+  var store = this.getStore();
+  if (!store) {
+    this.setStore(true);
+    store = this._store;
+  }
+  if (!newOptions) {
+    store.clearData();
+  } else {
+    store.setData(newOptions);
+    this.onStoreDataChanged(store);
+  }
   return this;
-}, getFieldsAsArray:function() {
-  var fields = [], getFieldsFrom = function(item) {
-    if (item.isField) {
-      fields.push(item);
+}, applyStore:function(store) {
+  if (store === true) {
+    store = Ext.create('Ext.data.Store', {fields:[this.getValueField(), this.getDisplayField()], autoDestroy:true});
+  }
+  if (store) {
+    store = Ext.data.StoreManager.lookup(store);
+    store.on({scope:this, addrecords:'onStoreDataChanged', removerecords:'onStoreDataChanged', updaterecord:'onStoreDataChanged', refresh:'onStoreDataChanged'});
+  }
+  return store;
+}, updateStore:function(newStore) {
+  if (newStore) {
+    this.onStoreDataChanged(newStore);
+  }
+  if (this.getUsePicker() && this.picker) {
+    this.picker.down('pickerslot').setStore(newStore);
+  } else {
+    if (this.listPanel) {
+      this.listPanel.down('dataview').setStore(newStore);
     }
-    if (item.isContainer) {
-      item.getItems().each(getFieldsFrom);
+  }
+}, onStoreDataChanged:function(store) {
+  var initialConfig = this.getInitialConfig(), value = this.getValue();
+  if (value || value == 0) {
+    this.updateValue(this.applyValue(value));
+  }
+  if (this.getValue() === null) {
+    if (initialConfig.hasOwnProperty('value')) {
+      this.setValue(initialConfig.value);
     }
-  };
-  this.getItems().each(getFieldsFrom);
-  return fields;
-}}, 0, ['fieldset'], ['component', 'container', 'fieldset'], {'component':true, 'container':true, 'fieldset':true}, ['widget.fieldset'], 0, [Ext.form, 'FieldSet'], 0);
+    if (this.getValue() === null && this.getAutoSelect()) {
+      if (store.getCount() > 0) {
+        this.setValue(store.getAt(0));
+      }
+    }
+  }
+}, doSetDisabled:function(disabled) {
+  var component = this.getComponent();
+  if (component) {
+    component.setDisabled(disabled);
+  }
+  Ext.Component.prototype.doSetDisabled.apply(this, arguments);
+}, setDisabled:function() {
+  Ext.Component.prototype.setDisabled.apply(this, arguments);
+}, updateLabelWidth:function() {
+  if (Ext.theme.is.Blackberry || Ext.theme.is.Blackberry103) {
+    return;
+  } else {
+    Ext.field.Text.prototype.updateLabelWidth.apply(this, arguments);
+  }
+}, updateLabelAlign:function() {
+  if (Ext.theme.is.Blackberry || Ext.theme.is.Blackberry103) {
+    return;
+  } else {
+    Ext.field.Text.prototype.updateLabelAlign.apply(this, arguments);
+  }
+}, reset:function() {
+  var me = this, record;
+  if (me.getAutoSelect()) {
+    var store = me.getStore();
+    record = me.originalValue ? me.originalValue : store.getAt(0);
+  } else {
+    var usePicker = me.getUsePicker(), picker = usePicker ? me.picker : me.listPanel;
+    if (picker) {
+      picker = picker.child(usePicker ? 'pickerslot' : 'dataview');
+      picker.deselectAll();
+    }
+    record = null;
+  }
+  me.setValue(record);
+  return me;
+}, onFocus:function(e) {
+  if (this.getDisabled()) {
+    return false;
+  }
+  var component = this.getComponent();
+  this.fireEvent('focus', this, e);
+  if (Ext.os.is.Android4) {
+    component.input.dom.focus();
+  }
+  component.input.dom.blur();
+  this.isFocused = true;
+  this.showPicker();
+}, destroy:function() {
+  Ext.field.Text.prototype.destroy.apply(this, arguments);
+  var store = this.getStore();
+  if (store && store.getAutoDestroy()) {
+    Ext.destroy(store);
+  }
+  Ext.destroy(this.listPanel, this.picker);
+}}, 0, ['selectfield'], ['component', 'field', 'textfield', 'selectfield'], {'component':true, 'field':true, 'textfield':true, 'selectfield':true}, ['widget.selectfield'], 0, [Ext.field, 'Select', Ext.form, 'Select'], 0);
+Ext.cmd.derive('Ext.picker.Date', Ext.picker.Picker, {alternateClassName:'Ext.DatePicker', config:{yearFrom:1980, yearTo:(new Date).getFullYear(), monthText:'Month', dayText:'Day', yearText:'Year', slotOrder:['month', 'day', 'year'], doneButton:true}, platformConfig:[{theme:['Windows'], doneButton:{iconCls:'check2', ui:'round', text:''}}], initialize:function() {
+  Ext.picker.Picker.prototype.initialize.call(this);
+  this.on({scope:this, delegate:'\x3e slot', slotpick:this.onSlotPick});
+  this.on({scope:this, show:this.onSlotPick});
+}, setValue:function(value, animated) {
+  if (Ext.isDate(value)) {
+    value = {day:value.getDate(), month:value.getMonth() + 1, year:value.getFullYear()};
+  }
+  (arguments.callee.$previous || Ext.picker.Picker.prototype.setValue).call(this, value, animated);
+  this.onSlotPick();
+}, getValue:function(useDom) {
+  var values = {}, items = this.getItems().items, ln = items.length, daysInMonth, day, month, year, item, i;
+  for (i = 0; i < ln; i++) {
+    item = items[i];
+    if (item instanceof Ext.picker.Slot) {
+      values[item.getName()] = item.getValue(useDom);
+    }
+  }
+  if (values.year === null && values.month === null && values.day === null) {
+    return null;
+  }
+  year = Ext.isNumber(values.year) ? values.year : 1;
+  month = Ext.isNumber(values.month) ? values.month : 1;
+  day = Ext.isNumber(values.day) ? values.day : 1;
+  if (month && year && month && day) {
+    daysInMonth = this.getDaysInMonth(month, year);
+  }
+  day = daysInMonth ? Math.min(day, daysInMonth) : day;
+  return new Date(year, month - 1, day);
+}, updateYearFrom:function() {
+  if (this.initialized) {
+    this.createSlots();
+  }
+}, updateYearTo:function() {
+  if (this.initialized) {
+    this.createSlots();
+  }
+}, updateMonthText:function(newMonthText, oldMonthText) {
+  var innerItems = this.getInnerItems, ln = innerItems.length, item, i;
+  if (this.initialized) {
+    for (i = 0; i < ln; i++) {
+      item = innerItems[i];
+      if (typeof item.title == 'string' && item.title == oldMonthText || item.title.html == oldMonthText) {
+        item.setTitle(newMonthText);
+      }
+    }
+  }
+}, updateDayText:function(newDayText, oldDayText) {
+  var innerItems = this.getInnerItems, ln = innerItems.length, item, i;
+  if (this.initialized) {
+    for (i = 0; i < ln; i++) {
+      item = innerItems[i];
+      if (typeof item.title == 'string' && item.title == oldDayText || item.title.html == oldDayText) {
+        item.setTitle(newDayText);
+      }
+    }
+  }
+}, updateYearText:function(yearText) {
+  var innerItems = this.getInnerItems, ln = innerItems.length, item, i;
+  if (this.initialized) {
+    for (i = 0; i < ln; i++) {
+      item = innerItems[i];
+      if (item.title == this.yearText) {
+        item.setTitle(yearText);
+      }
+    }
+  }
+}, constructor:function() {
+  Ext.picker.Picker.prototype.constructor.apply(this, arguments);
+  this.createSlots();
+}, createSlots:function() {
+  var me = this, slotOrder = me.getSlotOrder(), yearsFrom = me.getYearFrom(), yearsTo = me.getYearTo(), years = [], days = [], months = [], reverse = yearsFrom > yearsTo, ln, i, daysInMonth;
+  while (yearsFrom) {
+    years.push({text:yearsFrom, value:yearsFrom});
+    if (yearsFrom === yearsTo) {
+      break;
+    }
+    if (reverse) {
+      yearsFrom--;
+    } else {
+      yearsFrom++;
+    }
+  }
+  daysInMonth = me.getDaysInMonth(1, (new Date).getFullYear());
+  for (i = 0; i < daysInMonth; i++) {
+    days.push({text:i + 1, value:i + 1});
+  }
+  for (i = 0, ln = Ext.Date.monthNames.length; i < ln; i++) {
+    months.push({text:Ext.Date.monthNames[i], value:i + 1});
+  }
+  var slots = [];
+  slotOrder.forEach(function(item) {
+    slots.push(me.createSlot(item, days, months, years));
+  });
+  me.setSlots(slots);
+}, createSlot:function(name, days, months, years) {
+  switch(name) {
+    case 'year':
+      return {name:'year', align:'center', data:years, title:this.getYearText(), flex:3};
+    case 'month':
+      return {name:name, align:'right', data:months, title:this.getMonthText(), flex:4};
+    case 'day':
+      return {name:'day', align:'center', data:days, title:this.getDayText(), flex:2};
+  }
+}, onSlotPick:function() {
+  var value = this.getValue(true), slot = this.getDaySlot(), year = value.getFullYear(), month = value.getMonth(), days = [], daysInMonth, i;
+  if (!value || !Ext.isDate(value) || !slot) {
+    return;
+  }
+  Ext.picker.Picker.prototype.onSlotPick.apply(this, arguments);
+  daysInMonth = this.getDaysInMonth(month + 1, year);
+  for (i = 0; i < daysInMonth; i++) {
+    days.push({text:i + 1, value:i + 1});
+  }
+  if (slot.getStore().getCount() == days.length) {
+    return;
+  }
+  slot.getStore().setData(days);
+  var store = slot.getStore(), viewItems = slot.getViewItems(), valueField = slot.getValueField(), index, item;
+  index = store.find(valueField, value.getDate());
+  if (index == -1) {
+    return;
+  }
+  item = Ext.get(viewItems[index]);
+  slot.selectedIndex = index;
+  slot.scrollToItem(item);
+  slot.setValue(slot.getValue(true));
+}, getDaySlot:function() {
+  var innerItems = this.getInnerItems(), ln = innerItems.length, i, slot;
+  if (this.daySlot) {
+    return this.daySlot;
+  }
+  for (i = 0; i < ln; i++) {
+    slot = innerItems[i];
+    if (slot.isSlot && slot.getName() == 'day') {
+      this.daySlot = slot;
+      return slot;
+    }
+  }
+  return null;
+}, getDaysInMonth:function(month, year) {
+  var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return month == 2 && this.isLeapYear(year) ? 29 : daysInMonth[month - 1];
+}, isLeapYear:function(year) {
+  return !!((year & 3) === 0 && (year % 100 || year % 400 === 0 && year));
+}, onDoneButtonTap:function() {
+  var oldValue = this._value, newValue = this.getValue(true), testValue = newValue;
+  if (Ext.isDate(newValue)) {
+    testValue = newValue.toDateString();
+  }
+  if (Ext.isDate(oldValue)) {
+    oldValue = oldValue.toDateString();
+  }
+  if (testValue != oldValue) {
+    this.fireEvent('change', this, newValue);
+  }
+  this.hide();
+  Ext.util.InputBlocker.unblockInputs();
+}}, 1, ['datepicker'], ['component', 'container', 'panel', 'sheet', 'picker', 'datepicker'], {'component':true, 'container':true, 'panel':true, 'sheet':true, 'picker':true, 'datepicker':true}, ['widget.datepicker'], 0, [Ext.picker, 'Date', Ext, 'DatePicker'], 0);
+Ext.cmd.derive('Ext.field.DatePicker', Ext.field.Select, {alternateClassName:'Ext.form.DatePicker', config:{ui:'select', picker:true, clearIcon:false, destroyPickerOnHide:false, dateFormat:null, component:{useMask:true}}, initialize:function() {
+  var me = this, component = me.getComponent();
+  Ext.field.Select.prototype.initialize.call(this);
+  component.on({scope:me, masktap:'onMaskTap'});
+  component.doMaskTap = Ext.emptyFn;
+  if (Ext.browser.is.AndroidStock2) {
+    component.input.dom.disabled = true;
+  }
+}, syncEmptyCls:Ext.emptyFn, applyValue:function(value) {
+  if (!Ext.isDate(value) && !Ext.isObject(value)) {
+    return null;
+  }
+  if (Ext.isObject(value)) {
+    return new Date(value.year, value.month - 1, value.day);
+  }
+  return value;
+}, updateValue:function(newValue, oldValue) {
+  var me = this, picker = me._picker;
+  if (picker && picker.isPicker) {
+    picker.setValue(newValue);
+  }
+  if (newValue !== null) {
+    me.getComponent().setValue(Ext.Date.format(newValue, me.getDateFormat() || Ext.util.Format.defaultDateFormat));
+  } else {
+    me.getComponent().setValue('');
+  }
+  if (newValue !== oldValue) {
+    me.fireEvent('change', me, newValue, oldValue);
+  }
+}, updateDateFormat:function(newDateFormat, oldDateFormat) {
+  var value = this.getValue();
+  if (newDateFormat != oldDateFormat && Ext.isDate(value)) {
+    this.getComponent().setValue(Ext.Date.format(value, newDateFormat || Ext.util.Format.defaultDateFormat));
+  }
+}, getValue:function() {
+  if (this._picker && this._picker instanceof Ext.picker.Date) {
+    return this._picker.getValue();
+  }
+  return this._value;
+}, getFormattedValue:function(format) {
+  var value = this.getValue();
+  return Ext.isDate(value) ? Ext.Date.format(value, format || this.getDateFormat() || Ext.util.Format.defaultDateFormat) : value;
+}, applyPicker:function(picker, pickerInstance) {
+  if (pickerInstance && pickerInstance.isPicker) {
+    picker = pickerInstance.setConfig(picker);
+  }
+  return picker;
+}, getPicker:function() {
+  var picker = this._picker, value = this.getValue();
+  if (picker && !picker.isPicker) {
+    picker = Ext.factory(picker, Ext.picker.Date);
+    if (value != null) {
+      picker.setValue(value);
+    }
+  }
+  picker.on({scope:this, change:'onPickerChange', hide:'onPickerHide'});
+  this._picker = picker;
+  return picker;
+}, onMaskTap:function() {
+  if (this.getDisabled()) {
+    return false;
+  }
+  this.onFocus();
+  return false;
+}, onPickerChange:function(picker, value) {
+  var me = this, oldValue = me.getValue();
+  me.setValue(value);
+  me.fireEvent('select', me, value);
+  me.onChange(me, value, oldValue);
+}, onChange:Ext.emptyFn, onPickerHide:function() {
+  var me = this, picker = me.getPicker();
+  if (me.getDestroyPickerOnHide() && picker) {
+    picker.destroy();
+    me._picker = me.getInitialConfig().picker || true;
+  }
+}, reset:function() {
+  this.setValue(this.originalValue);
+}, onFocus:function(e) {
+  var component = this.getComponent();
+  this.fireEvent('focus', this, e);
+  if (Ext.os.is.Android4) {
+    component.input.dom.focus();
+  }
+  component.input.dom.blur();
+  if (this.getReadOnly()) {
+    return false;
+  }
+  this.isFocused = true;
+  this.getPicker().show();
+}, destroy:function() {
+  var picker = this._picker;
+  if (picker && picker.isPicker) {
+    picker.destroy();
+  }
+  Ext.field.Select.prototype.destroy.apply(this, arguments);
+}}, 0, ['datepickerfield'], ['component', 'field', 'textfield', 'selectfield', 'datepickerfield'], {'component':true, 'field':true, 'textfield':true, 'selectfield':true, 'datepickerfield':true}, ['widget.datepickerfield'], 0, [Ext.field, 'DatePicker', Ext.form, 'DatePicker'], 0);
 Ext.cmd.derive('Ext.form.Panel', Ext.Panel, {alternateClassName:'Ext.form.FormPanel', config:{baseCls:'x-form', standardSubmit:false, url:null, enctype:null, baseParams:null, submitOnAction:false, record:null, method:'post', scrollable:{translatable:{translationMethod:'scrollposition'}}, trackResetOnLoad:false, api:null, paramOrder:null, paramsAsHash:null, timeout:30, multipartDetection:true, enableSubmissionForm:true}, getElementConfig:function() {
   var config = Ext.Panel.prototype.getElementConfig.call(this);
   config.tag = 'form';
@@ -26798,16 +27493,18 @@ Ext.cmd.derive('Ext.viewport.Viewport', Ext.Base, {constructor:function(config) 
   viewport = Ext.create('Ext.viewport.' + viewportName, config);
   return viewport;
 }}, 1, 0, 0, 0, 0, 0, [Ext.viewport, 'Viewport'], 0);
-Ext.cmd.derive('InvoiceApp.view.Invoices', Ext.List, {configs:{iconCls:'home', title:'Projects', store:{fields:['name'], data:[{name:'Lawrence'}, {name:'Kansas'}, {name:'University'}, {name:'Potter Lake'}]}}, onItemDisclosure:true, itemTpl:'{name}'}, 0, ['invoices'], ['component', 'container', 'dataview', 'list', 'invoices'], {'component':true, 'container':true, 'dataview':true, 'list':true, 'invoices':true}, ['widget.invoices'], 0, [InvoiceApp.view, 'Invoices'], 0);
-Ext.cmd.derive('InvoiceApp.view.Main', Ext.tab.Panel, {config:{tabBarPosition:'bottom', items:[{title:'Welcome', iconCls:'home', styleHtmlContent:true, scrollable:true, items:{docked:'top', xtype:'titlebar', title:'Welcome to Sencha Touch 2'}, html:["You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ", 'contents of \x3ca target\x3d\'_blank\' href\x3d"app/view/Main.js"\x3eapp/view/Main.js\x3c/a\x3e - edit that file ', "and refresh to change what's rendered here."].join('')}, 
-{title:'Get Started', iconCls:'action', items:[{docked:'top', xtype:'titlebar', title:'Getting Started'}, {xtype:'video', url:'http://av.vimeo.com/64284/137/87347327.mp4?token\x3d1330978144_f9b698fea38cd408d52a2393240c896c', posterUrl:'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'}]}, {title:'Get Starteda', iconCls:'action', xtype:'invoices'}, {title:'Contact', iconCls:'user', xtype:'formpanel', url:'contact.php', layout:'vbox', items:[{xtype:'fieldset', title:'Contact Us', instructions:'(email address is optional)', 
-height:285, items:[{xtype:'textfield', label:'Name'}, {xtype:'emailfield', label:'Email'}, {xtype:'textareafield', label:'Message'}]}, {xtype:'button', text:'Send', ui:'confirm', handler:function() {
-  this.up('formpanel').submit();
-}}]}]}}, 0, ['main'], ['component', 'container', 'tabpanel', 'main'], {'component':true, 'container':true, 'tabpanel':true, 'main':true}, ['widget.main'], 0, [InvoiceApp.view, 'Main'], 0);
+Ext.cmd.derive('InvoiceApp.form.InvoiceForm', Ext.form.Panel, {config:{iconCls:'add', title:'Create', items:[{xtype:'textfield', name:'supplier', label:'Supplier Details'}, {xtype:'textfield', name:'buyer', label:'Buyer Details'}, {xtype:'datepickerfield', name:'buyer', label:'Buyer Details'}, {xtype:'textfield', name:'buyer', label:'Buyer Details'}, {xtype:'textfield', name:'buyer', label:'Buyer Details'}]}}, 0, ['invoiceform'], ['component', 'container', 'panel', 'formpanel', 'invoiceform'], {'component':true, 
+'container':true, 'panel':true, 'formpanel':true, 'invoiceform':true}, ['widget.invoiceform'], 0, [InvoiceApp.form, 'InvoiceForm'], 0);
+Ext.cmd.derive('InvoiceApp.model.Invoices', Ext.data.Model, {config:{autoLoad:true, fields:['id', 'first'], proxy:{type:'jsonp', url:'http://cyclehouse.in.162-222-225-80.plesk-web6.webhostbox.net/data.txt', reader:{type:'json', rootProperty:'data'}}}}, 0, 0, 0, 0, 0, 0, [InvoiceApp.model, 'Invoices'], 0);
+Ext.cmd.derive('InvoiceApp.store.InvoiceStore', Ext.data.Store, {config:{autoLoad:true, model:'InvoiceApp.model.Invoices'}}, 0, 0, 0, 0, 0, 0, [InvoiceApp.store, 'InvoiceStore'], 0);
+Ext.cmd.derive('InvoiceApp.view.Invoices', Ext.List, {config:{iconCls:'home', title:'Projects', store:'InvoiceStore', itemTpl:'\x3cdiv\x3e{id}:{first}\x3c/div\x3e'}}, 0, ['invoices'], ['component', 'container', 'dataview', 'list', 'invoices'], {'component':true, 'container':true, 'dataview':true, 'list':true, 'invoices':true}, ['widget.invoices'], 0, [InvoiceApp.view, 'Invoices'], 0);
+Ext.cmd.derive('InvoiceApp.view.Main', Ext.tab.Panel, {config:{tabBarPosition:'bottom', items:[{xtype:'invoices'}, {xtype:'invoiceform'}]}}, 0, ['main'], ['component', 'container', 'tabpanel', 'main'], {'component':true, 'container':true, 'tabpanel':true, 'main':true}, ['widget.main'], 0, [InvoiceApp.view, 'Main'], 0);
+function _b35a4f00a50f3a48006005ff0505fc559d6b45f5() {
+}
 function _7d30fc71ef6eb6fb1206aa320a460fcb6c1c5c48() {
 }
-Ext.application({name:'InvoiceApp', views:['Main', 'Invoices'], icon:{57:'resources/icons/Icon.png', 72:'resources/icons/Icon~ipad.png', 114:'resources/icons/Icon@2x.png', 144:'resources/icons/Icon~ipad@2x.png'}, isIconPrecomposed:true, startupImage:{'320x460':'resources/startup/320x460.jpg', '640x920':'resources/startup/640x920.png', '768x1004':'resources/startup/768x1004.png', '748x1024':'resources/startup/748x1024.png', '1536x2008':'resources/startup/1536x2008.png', '1496x2048':'resources/startup/1496x2048.png'}, 
-launch:function() {
+Ext.application({name:'InvoiceApp', views:['Main', 'Invoices'], models:['Invoices'], stores:['InvoiceStore'], icon:{57:'resources/icons/Icon.png', 72:'resources/icons/Icon~ipad.png', 114:'resources/icons/Icon@2x.png', 144:'resources/icons/Icon~ipad@2x.png'}, isIconPrecomposed:true, startupImage:{'320x460':'resources/startup/320x460.jpg', '640x920':'resources/startup/640x920.png', '768x1004':'resources/startup/768x1004.png', '748x1024':'resources/startup/748x1024.png', '1536x2008':'resources/startup/1536x2008.png', 
+'1496x2048':'resources/startup/1496x2048.png'}, launch:function() {
   Ext.fly('appLoadingIndicator').destroy();
   Ext.Viewport.add(Ext.create('InvoiceApp.view.Main'));
 }, onUpdated:function() {

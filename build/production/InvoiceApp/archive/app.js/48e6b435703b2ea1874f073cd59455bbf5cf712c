@@ -19,12 +19,11 @@ Ext.application({
   
     views: [
         'Main',
-        'Invoices',
-        'SupplierBuyer'
+        'Invoices'
     ], 
-    models:['Invoices','SupplierBuyer'],
-    stores:['InvoiceStore','SupplierBuyerStore'],
-    controllers: ['Main'],
+    models:['Invoices'],
+    stores:['InvoiceStore'],
+
     icon: {
         '57': 'resources/icons/Icon.png',
         '72': 'resources/icons/Icon~ipad.png',

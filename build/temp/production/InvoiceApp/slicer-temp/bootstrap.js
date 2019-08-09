@@ -2534,8 +2534,12 @@ Ext.ClassManager.addNameAlternateMappings({
   "Ext.viewport.WindowsPhone": [
     "Ext.viewport.WP"
   ],
+  "InvoiceApp.form.InvoiceForm": [],
+  "InvoiceApp.model.Invoices": [],
+  "InvoiceApp.store.InvoiceStore": [],
   "InvoiceApp.view.Invoices": [],
-  "InvoiceApp.view.Main": []
+  "InvoiceApp.view.Main": [],
+  "InvoiceApp.view.MainLayout": []
 });
 
 Ext.ClassManager.addNameAliasMappings({
@@ -3253,11 +3257,19 @@ Ext.ClassManager.addNameAliasMappings({
   "Ext.viewport.Ios": [],
   "Ext.viewport.Viewport": [],
   "Ext.viewport.WindowsPhone": [],
+  "InvoiceApp.form.InvoiceForm": [
+    "widget.invoiceform"
+  ],
+  "InvoiceApp.model.Invoices": [],
+  "InvoiceApp.store.InvoiceStore": [],
   "InvoiceApp.view.Invoices": [
     "widget.invoices"
   ],
   "InvoiceApp.view.Main": [
     "widget.main"
+  ],
+  "InvoiceApp.view.MainLayout": [
+    "widget.mainlayout"
   ]
 });
 

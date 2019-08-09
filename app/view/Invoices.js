@@ -3,9 +3,21 @@ Ext.define('InvoiceApp.view.Invoices',{
     xtype:'invoices',
     requires:['InvoiceApp.store.InvoiceStore'],
     config:{
+        items:[
+            {
+                xtype:'toolbar',
+                docked:'top',
+                title:'Invoice',
+                items:[
+                    {
+                        text:'New'
+                    }
+                ]
+            }
+        ],
         iconCls:'home',
         title:'Projects',	  
         store: 'InvoiceStore',       
-        itemTpl: '<div>{id}:{first}</div>'
+        itemTpl: '<div>{id}:{first_name}</div>'
         }
 });
