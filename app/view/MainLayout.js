@@ -4,15 +4,10 @@ Ext.define('InvoiceApp.view.MainLayout',{
     requires:['InvoiceApp.view.Main'],
     xtype:'mainlayout',
     config:{
-        //html:'welcome to mather app',
         fullscreen:true,
-        //tabBarPosition:'bottom',
         items:[{
-            xtype:'main'		
-            }/*,
-            {
-            xtype:'enquirycard'		
-            }*/
+                xtype:'main'		
+                }
             ]	
-        }	
-        });
+          }	
+    });

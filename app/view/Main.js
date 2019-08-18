@@ -3,6 +3,7 @@ Ext.define('InvoiceApp.view.Main', {
     xtype: 'main',
     requires: [
         'InvoiceApp.view.Invoices',
+        'InvoiceApp.controller.Main',
         'Ext.data.proxy.JsonP'
     ],
     config: {

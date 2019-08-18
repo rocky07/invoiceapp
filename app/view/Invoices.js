@@ -10,7 +10,8 @@ Ext.define('InvoiceApp.view.Invoices',{
                 title:'Invoice',
                 items:[
                     {
-                        text:'New'
+                        text:'New',
+                        action:'newinvoice'
                     }
                 ]
             }

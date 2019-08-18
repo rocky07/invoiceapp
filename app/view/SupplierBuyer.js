@@ -1,7 +1,10 @@
 Ext.define('InvoiceApp.view.SupplierBuyer',{
     extend:'Ext.List',
     xtype:'supplier_buyer',
-    requires:['InvoiceApp.store.SupplierBuyerStore'],
+    requires:[
+        'InvoiceApp.store.SupplierBuyerStore',
+        'InvoiceApp.controller.Main'
+    ],
     
     config:{
         items:[
@@ -12,7 +15,7 @@ Ext.define('InvoiceApp.view.SupplierBuyer',{
                 items:[
                     {
                         text:'New',
-                        id:'newsupplier'
+                        action:'addsupplierbuyer'
                     }
                 ]
             }
